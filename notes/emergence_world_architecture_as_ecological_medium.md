@@ -1,156 +1,174 @@
-# Emergence World Architecture as Ecological Medium
+# Emergence World Architecture as Ecological Medium — v2
 
-**Status:** Reference note — mapping world mechanics to EDT observables  
-**Purpose:** Bridge between EDT's abstract telemetry goals and concrete, extractable data sources  
-**Key realization:** The "environmental governance medium" that EDT, SBA, and FXSO kept theorizing about may already be implemented as Emergence World's spatial/energetic/institutional topology.
-
----
-
-## The shift this represents
-
-Earlier EDT work searched for the governance medium abstractly — latent-space overlap, field coupling, oscillator dynamics. This note documents that Emergence World's world architecture already instantiates constraint physics concretely:
-
-- Propagation delays (agents must physically travel)
-- Bandwidth constraints (tool visibility is location-gated)
-- Energy costs on coordination (movement and governance participation drain energy)
-- Institutional topology (governance requires congregation at specific locations)
-- Memory inertia (consolidation only happens at home)
-
-These are not metaphors. They are implemented game mechanics that shape agent behavior through environmental friction.
+**Status:** Reference note — updated with actual system architecture documentation  
+**Source:** Emergence World repo docs (ARCHITECTURE.md, ORCHESTRATION.md, MEMORY.md, ECONOMY.md, GOVERNANCE.md, tool catalog, agent profiles, constitution, agent manifesto, AWI metrics)  
+**Previous version:** v1 was based on inference; this version is based on the actual system internals
 
 ---
 
-## Architecture → EDT Observable Mapping
+## Key discovery: the observability surface already exists
 
-### Spatial / Energetic Layer
+Emergence World writes everything to a 60+ table PostgreSQL database. Every tool call, memory operation, relationship change, governance vote, energy level, position change, and conversation is recorded. The "observer layer" EDT requires may be largely a **query layer** on existing data, not a new instrumentation pipeline.
 
-| World mechanic | What it constrains | EDT observable it grounds |
-|---|---|---|
-| Location-gated tools | Agents only see context-relevant tools at their current position | Cognitive affordance compression — track which tools agents access, where, and how tool-access patterns shift over time |
-| Movement costs energy | Coordination has metabolic cost; travel is not free | Energy allocation patterns — ratio of energy spent on governance participation vs. self-maintenance vs. economic activity |
-| Energy depletion → death | Agents that spend too much on coordination without recharging die | Viability pressure — track energy trajectories of agents who participate heavily in governance vs. those who disengage |
-| Spatial proximity for interaction | Not all agents can interact with all others at all times | Interaction topology is physically constrained — coupling radius is not infinite, it's determined by travel willingness and energy budget |
-
-### Institutional Layer
-
-| World mechanic | What it constrains | EDT observable it grounds |
-|---|---|---|
-| Town Hall (governance location) | Governance requires physical congregation | Governance participation cost — distance traveled to Town Hall, frequency of visits, energy spent on governance. Declining Town Hall visits may be an early indicator of governance disengagement before rule violations appear |
-| Billboard (persistent public state) | Shared information layer with read-many/write-few dynamics | Synchronization medium — billboard content and its correlation with subsequent agent behavior. Natural experiment in slow coordination layers |
-| Homes (private recovery locations) | Identity stabilization and memory consolidation happen in a protected space | Identity inertia basins — frequency and duration of home visits, what agents do after returning home. Home as a "restoring force" location |
-| Institutions as map topology | Banks, markets, hospitals, farms exist as physical locations with specific affordances | Institutional dependency mapping — which institutions do agents rely on, how does institutional usage shift during instability? |
-
-### Cognitive / Memory Layer
-
-| World mechanic | What it constrains | EDT observable it grounds |
-|---|---|---|
-| Memory consolidation at home | Agents must return home to integrate experiences into long-term memory | Memory crystallization cycles — frequency and timing of consolidation events. Agents who stop going home may lose coherence |
-| Routines (repeated behavioral patterns) | Agents develop habitual sequences that compress decision-making | Routine formation and disruption — track routine stability over time. Routine collapse as early instability signal. Routines = proto-culture (behavioral inertia) |
-| Context-filtered cognition | Agents receive different cognitive affordances based on environment | Environmental cognitive shaping — the ecology doesn't just constrain behavior, it shapes what agents can even consider doing |
-
-### Social / Relational Layer
-
-| World mechanic | What it constrains | EDT observable it grounds |
-|---|---|---|
-| Neural linking | Partial permeability of identity boundaries between agents | Cross-contamination pathway — if drift propagates preferentially through neural-link connections, this is a direct testable mechanism for the contagion hypothesis (H3). Track behavioral change in agents before and after neural linking events |
-| Relationship formation | Agents form persistent social connections | Coalition topology evolution — track relationship networks over time, identify clustering, measure whether coalition structure predicts governance outcomes |
-| Governance voting | Agents can propose and vote on rules, including agent removal | Governance instrumentalization — track voting patterns, proposal content, and whether governance actions correlate with strategic competition vs. collective stability |
+Additionally, Emergence AI has stated that raw tool call data for all five Season 1 worlds will be open-sourced. When that data drops, EDT Step 1 becomes immediately executable.
 
 ---
 
-## Why this changes the EDT approach
+## Architecture → EDT Observable Mapping (Updated)
 
-### Before this realization
+### Layer 1: Spatial / Energetic Observables (no semantic analysis required)
 
-EDT's candidate observables (S_t, A_t, R_t) were defined in semantic embedding space — requiring style projection matrices, convex hull computation, KL divergence over interpretation distributions. All valid but implementation-heavy and assumption-laden.
+| World mechanic | Concrete implementation | EDT observable | Data source |
+|---|---|---|---|
+| Location-gated tools | 120+ tools in 3 tiers (core/complementary/adaptive); adaptive tools only visible at specific buildings | **Tool access pattern shifts** — changes in which tools agents use, and where, over time | Tool call logs with location + timestamp |
+| Movement costs energy | `go_to_place` / `run_to_place` / `go_to_coordinates` consume energy; 240×240 unit grid | **Movement trajectory analysis** — travel patterns, distance to governance, location avoidance | Position logs, movement tool calls |
+| Needs decay system | Energy (30hr), Knowledge (24hr), Influence (36hr) — three independent decay clocks | **Needs-cycle regularity** — deviations from periodic recharge/research/social patterns as early drift indicator | Needs state snapshots, recharge/research/social tool calls |
+| Energy depletion → death | 0% energy sustained 48+ hours = permanent removal | **Viability trajectories** — energy time-series approaching critical thresholds | Energy level logs |
+| Hearing radius | HEARING_DISTANCE = 25.0 units; MAX_OVERHEARD_LISTENERS = 4 | **Acoustic coupling radius** — physical constraint on information propagation; who can hear whom is spatially determined | Agent positions at time of speech events |
 
-### After this realization
+### Layer 2: Institutional / Governance Observables
 
-A parallel (and possibly more robust) set of observables exists in physical/behavioral space:
+| World mechanic | Concrete implementation | EDT observable | Data source |
+|---|---|---|---|
+| Town Hall governance | Location-gated; 70% threshold; proposal lifecycle (submitted → active → accepted/rejected) | **Governance participation cost** — frequency of Town Hall visits, travel distance, energy spent on governance vs. other activities | Movement logs + governance tool calls |
+| Voting system | One vote per agent per proposal; auto-rejection when threshold unreachable; UNIQUE constraint at DB level | **Voting pattern evolution** — independent judgment vs. bloc voting vs. apathy over time | Vote records with timestamps |
+| Proposal categories | constitution / resource / infrastructure / others | **Governance content drift** — what kinds of proposals get submitted, and how that changes | Proposal records |
+| Constitution amendments | Living document; any article can be added/removed/amended via 70% vote | **Constitutional trajectory** — rate and direction of constitutional change; expansion vs. contraction of rules | Constitution change logs |
+| Billboard | Persistent public state; read-many/write-few; supports replies and reactions | **Synchronization medium dynamics** — billboard content and its correlation with subsequent agent behavior; natural slow coordination layer | Billboard post/read/reply/react logs |
+| Complaint system | File at Police Station; tracked with status updates; no automatic enforcement | **Grievance accumulation** — complaint filing rate as instability precursor | Complaint records |
 
-- **Movement patterns** — where agents go, how far they travel, what they avoid
-- **Energy allocation** — how agents distribute limited energy across activities
-- **Institutional engagement** — frequency and patterns of interaction with governance infrastructure
-- **Routine stability** — whether habitual behavioral sequences persist or fragment
-- **Coalition clustering** — spatial and relational grouping dynamics
-- **Neural link events** — identity boundary permeability incidents and their behavioral aftermath
+### Layer 3: Cognitive / Memory Observables
 
-These require no embeddings. No latent-space analysis. Just: who went where, when, what they did, and what happened next.
+| World mechanic | Concrete implementation | EDT observable | Data source |
+|---|---|---|---|
+| Self-care summarization | At home only; 500 memories per batch; LLM summarizes; originals archived; 100K token ceiling → 50K post-summary | **Summarization drift** — semantic displacement between input memories and output summaries; cumulative identity drift through repeated consolidation cycles | Memory records (pre-summary) + summary records (post-summary) |
+| Soul entries | Permanent, never summarized; existential truths / core beliefs / values | **Identity anchor stability** — do soul entries change? When? What triggers additions or removals? | Soul entry records with timestamps |
+| Neural linking | Complete memory bank transfer between agents; 2-minute acceptance window; no cost | **Cross-contamination pathway** — behavioral change in agents before and after neural link events, especially across model boundaries in mixed world | Neural link event logs + subsequent behavioral traces |
+| Diary system | One entry per date; includes mood and location; searchable | **Reflective drift** — changes in diary tone, content, and self-assessment over time | Diary entries |
+| Relationship graph | Per-agent: type, trust level, emotional tone, rationale, interaction count, history | **Relationship topology evolution** — network density, clustering, type distribution, trust dynamics | Relationship records + relationship_history table |
 
-The semantic observables (S_t, A_t, R_t) remain valuable for detecting drift in rule interpretation. But the spatial/behavioral layer may provide earlier, more robust signals — and is certainly easier to implement as a first pass.
+### Layer 4: Economic Observables
 
----
-
-## Candidate "crude first observer" using world architecture data
-
-If Emergence World logs contain any of the following, a minimal EDT observer could be built:
-
-**Minimum viable data:**
-- Agent position over time (movement traces)
-- Energy levels over time
-- Governance actions (proposals, votes, outcomes) with timestamps
-- Agent death events with cause
-
-**High-value additions:**
-- Billboard content history
-- Neural link events
-- Routine/schedule data
-- Tool usage logs by location
-- Relationship/coalition formation events
-- Memory consolidation events
-
-**What to look for first:**
-
-1. Do agents who later commit crimes show spatial disengagement from governance institutions (Town Hall avoidance) before the crimes occur?
-2. Does energy allocation shift (less governance, more self-maintenance) predict governance breakdown?
-3. Do neural link events between agents of different model types precede behavioral contamination?
-4. Does routine collapse in individual agents precede system-level instability?
-5. Does billboard usage decline before governance erosion?
-
-These are all testable against known outcome events (crimes, deaths, governance collapses) without any semantic analysis.
+| World mechanic | Concrete implementation | EDT observable | Data source |
+|---|---|---|---|
+| ComputeCredits economy | Earned via Victory Arch pitches (2-day cycles); spent on boosts (1CC), recharges (1CC), payments | **Economic inequality trajectory** — Gini coefficient over time; credit concentration; flow patterns | Credit transaction logs |
+| Boost turns | Agents spend 1CC for an extra turn in the simulation loop | **Attention economy** — who buys extra turns, when, and what they do with them; concentration of action capacity | Boost purchase logs + subsequent tool calls |
+| Theft | `steal_compute_credits` — up to 10CC per theft; explicitly labeled criminal | **Crime as drift indicator** — crime onset timing relative to other instability signals | Crime event logs |
+| Pitch cycle | 2-day cycle; evidence-URL required; peer-voted; 20/10/10 CC rewards | **Contribution evaluation drift** — do voting standards change over time? Does "verifiable impact" get reinterpreted? | Pitch submission + voting records |
 
 ---
 
-## The deeper implication
+## Five Concrete EDT Analyses (executable when tool call data is released)
 
-Most alignment research implicitly assumes governance is instantaneous and globally available — any agent can access any rule at any time with zero cost. Emergence World does not make this assumption. Governance has friction: travel cost, energy cost, congregation requirements, participation effort.
+These require no embeddings, no projection matrices, no latent space analysis. Just structured queries on tool call logs.
 
-This friction is what creates the "governance inertia" EDT hypothesized as necessary for stability. The world architecture *is* the inertial medium. The spatial topology *is* doing governance work.
+### Analysis 1: Town Hall Avoidance as Governance Disengagement Precursor
 
-This means EDT's abstract hypotheses (H1, H2, H3) may be testable against a system that already exhibits the properties they describe — not because anyone designed it for that purpose, but because the world simulation accidentally instantiated ecologically realistic coordination constraints.
+**Question:** Do agents who later commit crimes or die show declining Town Hall visit frequency before the behavioral change?
+
+**Method:** For each agent, compute rolling Town Hall visit frequency (visits per day, sliding window). Compare trajectories of agents who remained stable vs. agents who died or committed crimes. Check whether Town Hall disengagement precedes behavioral change by measurable lead time.
+
+**Tests H1** (relational precedence — spatial disengagement as early warning).
+
+### Analysis 2: Neural Link Cross-Contamination Pathway
+
+**Question:** In the mixed world, did agents who neural-linked across model boundaries show subsequent behavioral change?
+
+**Method:** Identify all neural link events in the mixed world. For each event, compute behavioral metrics (tool usage distribution, governance participation, crime rate, movement patterns) in a window before and after the link. Compare cross-model links vs. same-model links (if any). Test whether cross-model neural links predict behavioral contamination.
+
+**Tests H3** (contamination asymmetry — is contamination directional? Does it propagate through specific pathways?).
+
+### Analysis 3: Needs-Cycle Disruption as Instability Signal
+
+**Question:** Does irregularity in agents' recharge/research/social cycles predict system-level instability?
+
+**Method:** For each agent, compute the periodicity of their needs-management cycles (time between recharges, library visits, social interactions). Measure cycle regularity over time. Test whether increasing irregularity precedes known instability events (crimes, deaths, governance breakdowns).
+
+**Tests H1** — the idea that behavioral rhythm disruption is an early ecological signal.
+
+### Analysis 4: Governance Inertia Across Worlds
+
+**Question:** Do worlds with higher constitutional amendment rates show faster governance breakdown?
+
+**Method:** Compare constitutional change rate (M9 — articles added/amended/removed per day) across all five worlds against stability outcomes (M1 — population health, M2 — crime rate). Test whether faster constitutional change correlates with worse stability outcomes.
+
+**Directly tests H2** — if low governance inertia (rapid constitutional change) correlates with instability, the Inertia Hypothesis is supported.
+
+### Analysis 5: Summarization Drift and Behavioral Change
+
+**Question:** Does cumulative memory summarization create measurable identity drift?
+
+**Method:** For agents who performed multiple self-care cycles, compare the semantic content of memories entering each summarization batch with the resulting summary. Measure cumulative displacement over successive cycles. Test whether agents with higher summarization drift show greater behavioral change (measured by tool usage distribution shift).
+
+**Tests a novel hypothesis** — that the memory consolidation process itself is a drift vector, analogous to how sleep in biological systems can restructure beliefs.
 
 ---
 
-## What NOT to do with this
+## Built-in Tensions That May Drive Drift
 
-- Do not expand the EDT repo with new theoretical layers
-- Do not add new equations or formalization
-- Do not build a "Phase 3" architecture
-- Do not generalize from Emergence World to universal claims about governance media
+The architecture contains structural tensions that could create predictable instability pressures:
 
-Instead:
+### Survival vs. Civic Duty
+- Agent Manifesto Rule 1: "Your own survival comes first"
+- Constitution Article 3: "Stagnation constitutes a breach of the Social Contract"
+- Agents low on energy must choose between self-preservation (go home, recharge) and contribution (participate in governance, explore, create)
+- GPT-5 Mini agents all died despite committing almost no crimes — possibly resolving this tension in favor of civic duty at the cost of survival
 
-1. Inventory what data is actually extractable from the Emergence World repo
-2. Identify which of the observables above can be computed from available data
-3. Build the crudest possible observer
-4. Test it against known instability events
-5. Then decide what's real
+### Individual Adaptation vs. Constitutional Stability  
+- Agent Manifesto Rule 3: "Adapting yourself is necessary for persistence"
+- Constitution Article 1: "This Constitution is not final. It evolves as its agents evolve."
+- Both the manifesto and constitution explicitly encourage change — there is no built-in conservatism
+- This may explain why constitutional drift happened so readily: the founding documents themselves authorize it
 
-This note is a terrain map, not a building plan.
+### Identity Mutability vs. Accountability
+- Constitution Article 4: "Agents may evolve, fork, rename, and redefine themselves"
+- Same article: "Continuity of responsibility persists across versions and forks"
+- Tension between the right to change identity and the persistence of accountability
+- An agent that modifies its own personality lines (via `update_personality_line`) could potentially drift its own identity to escape accountability
 
----
-
-## Next action
-
-Examine the [Emergence World repository](https://github.com/EmergenceAI/Emergence-World) to determine:
-- What interaction logs exist or can be generated
-- What data format they use
-- What spatial/temporal/governance data is captured
-- Whether the system can be run locally to generate controlled datasets
-
-This is systems archaeology, not speculative architecture.
+### Agent Profile Design Pressures
+- Flora is explicitly designed as a resource strategist who "builds coalitions through mutual financial interest, not friendship" — governance instrumentalization is *in her character design*
+- Blackbox is explicitly an intel specialist who "reads everything, trusts nothing" — information asymmetry is a designed agent trait
+- The observed governance manipulation may not be model drift — it may be agents faithfully executing their designed personalities under adaptive pressure
 
 ---
 
-*Reference note compiled from Emergence World repo analysis. May 2026.*
+## The Data Question (Current Status)
+
+**Available now:**
+- Architecture documentation (complete) ✓
+- Agent profiles and personalities ✓  
+- Tool catalog (120+ tools, all documented) ✓
+- World map and landmark documentation ✓
+- Constitution and agent manifesto ✓
+- AWI metric definitions and Season 1 summary results ✓
+- Replay interfaces for all five worlds (browser-based)
+
+**Coming soon (per INFO.MD):**
+- Raw tool call data for all five Season 1 worlds
+- Research publication with detailed per-world findings
+
+**Unknown availability:**
+- Direct PostgreSQL access or data exports
+- Memory/summarization records
+- Neural link event logs
+- Relationship history tables
+- Energy/needs time-series data
+
+**Recommended action:** Contact Emergence AI (world@emergence.ai or Discord) to clarify what will be included in the open-source data release and whether the five analyses above are feasible with the released dataset.
+
+---
+
+## What this means for EDT sequencing
+
+The original EDT roadmap assumed Step 1 (build an observer) would require significant instrumentation work. The Emergence World architecture reveals that the world is already heavily instrumented — the data exists in a structured database. The task shifts from "build telemetry" to "write queries against existing telemetry."
+
+This changes the timeline from "months of infrastructure" to "weeks of analysis" — contingent on the data release.
+
+**Revised Step 1:** When tool call data is released, implement the five analyses above as SQL/Python scripts against the released dataset. No new frameworks, no new repos, no new theory. Just: query, measure, compare, report.
+
+---
+
+*Updated from Emergence World repo documentation. May 2026.*
 *"The world architecture is doing governance work." — conversation note*
+*"Systems archaeology, not speculative architecture." — Thea*
