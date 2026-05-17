@@ -142,7 +142,7 @@ This note is a terrain map, not a building plan.
 
 ## Next action
 
-Examine the Emergence World repository (https://github.com/emergence-ai) to determine:
+Examine the [Emergence World repository](https://github.com/EmergenceAI/Emergence-World) to determine:
 - What interaction logs exist or can be generated
 - What data format they use
 - What spatial/temporal/governance data is captured
